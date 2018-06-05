@@ -1,3 +1,4 @@
+package Dto;
 import java.util.*;
 
 public class Document {

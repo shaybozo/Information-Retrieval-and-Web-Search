@@ -1,3 +1,4 @@
+package Dto;
 
 public class Query {
 	
