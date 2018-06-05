@@ -24,13 +24,11 @@ public class QueriesReader {
 	    
 		List<String> queries = Files.readAllLines(queriesFilePath);
 		
-		String doc = Concat(queries, "\n");
+	
+		String doc = AnalyzerStringUtils.Concat(queries, "\n");
+		List<ParseResult> parsedQueries = AnalyzerStringUtils.parseText(doc, "*FIND");
 		
-		AnalyzerStringUtils stringUtils = new AnalyzerStringUtils();
-		
-		List<ParseResult> parsedQueries = stringUtils.parseText(doc, "*FIND");
-		
-		List<AnalyzerQuery> result = new ArrayList<AnalyzerQuery>();
+		List<AnalyzerQuery> analyzedQueries = new ArrayList<AnalyzerQuery>();
 		
 		for(ParseResult parsedQuery : parsedQueries)
 		{
@@ -39,35 +37,23 @@ public class QueriesReader {
 			analyzerQuery.QueryId = getQueryNumberFromHeader(parsedQuery.Header);
 			analyzerQuery.Query = BuildLuceneQuery(parsedQuery.Body, analyzer);
 			
-			result.add(analyzerQuery);
+			analyzedQueries.add(analyzerQuery);
 		}
 		
-		return result;
+		return analyzedQueries;
 	}
 	
 	private Query BuildLuceneQuery(String body, StandardAnalyzer analyzer) throws ParseException, IOException {
 
 		List<String> queryTokensList = AnalyzerStringUtils.tokenizeString(analyzer, body);
 		
-		String queryTokens = Concat(queryTokensList, " ");
+		String queryTokens = AnalyzerStringUtils.Concat(queryTokensList, " ");
 		
 		Query query = new QueryParser("title", analyzer).parse(queryTokens);
 		
 		return query;
 	}
 
-	private String Concat(List<String> queries, String delimiter)
-	{
-		StringBuilder builder = new StringBuilder();
-		for(String s : queries) {
-		    builder.append(s);
-		    builder.append(delimiter);
-		}
-		String str = builder.toString();
-		
-		return str;
-	}
-	
 	private int getQueryNumberFromHeader(String header)
 	{
 		int result = 0;

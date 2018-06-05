@@ -12,7 +12,7 @@ import Dto.ParseResult;
 
 public class AnalyzerStringUtils 
 {
-	public List<ParseResult> parseText(String text, String headerPrefix)
+	public static List<ParseResult> parseText(String text, String headerPrefix)
 	{
 		List<ParseResult> result = new ArrayList<ParseResult>();
 		int fromIndex = 0;
@@ -48,6 +48,18 @@ public class AnalyzerStringUtils
 		}
 		
 		return result;			
+	}
+	
+	public static String Concat(List<String> queries, String delimiter)
+	{
+		StringBuilder builder = new StringBuilder();
+		for(String s : queries) {
+		    builder.append(s);
+		    builder.append(delimiter);
+		}
+		String str = builder.toString();
+		
+		return str;
 	}
 	
 	public static List<String> tokenizeString(Analyzer analyzer, String text) throws IOException {
