@@ -45,18 +45,19 @@ public class Analyzer {
 		String queryFile = m_ParametersReader.getQueryFilePath(parameters);
 		String docsFile = m_ParametersReader.getDocsFilePath(parameters);
 		String outputFile = m_ParametersReader.getOutputFilePath(parameters);
-		String retrievalAlgorithm = m_ParametersReader.getRetrievalAlgorithm(parameters); // TODO: use it
-		    
+		String retrievalAlgorithm = m_ParametersReader.getRetrievalAlgorithm(parameters);
+		Boolean isImprovedAlgo = retrievalAlgorithm.toLowerCase() == "improved";  
+		
 		// Load Queries from file and prepare them for execution
-		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer);
+		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer); // TODO:SHAY
 		
 		// Load all documents from file into the IndexWriter and index them
-		LoadAllDocs(indexWriter, docsFile);
+		LoadAllDocs(indexWriter, docsFile, isImprovedAlgo); // TODO:YRHUDA
 		
 		// Run queries
-		List<QueryResult> queriesResults = ExecuteQueries(indexWriter, queries);
+		List<QueryResult> queriesResults = ExecuteQueries(indexWriter, queries); // TODO:SHAY
 		
-		WriteQueriesResultsToFile(queriesResults, outputFile);	
+		WriteQueriesResultsToFile(queriesResults, outputFile);
 	}
 
 	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer) 
@@ -66,9 +67,8 @@ public class Analyzer {
 		return queries;
 	}
 	
-	private void LoadAllDocs(IndexWriter indexWriter, String docsFile) {
-		// TODO Auto-generated method stub
-		
+	private void LoadAllDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo) {
+		m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, isImprovedAlgo);	
 	}
 
 	private List<QueryResult> ExecuteQueries(IndexWriter indexWriter, List<AnalyzerQuery> queries) {
