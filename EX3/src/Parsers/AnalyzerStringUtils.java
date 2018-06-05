@@ -29,7 +29,7 @@ public class AnalyzerStringUtils
 			parseResult.Header = text.substring(headerStartIndex, headerEndIndex);
 					
 			// for next iteration
-			headerStartIndex = text.indexOf(headerPrefix, fromIndex);
+			headerStartIndex = text.indexOf(headerPrefix, headerEndIndex);
 			
 			bodyStartIndex = headerEndIndex + 1;
 			
@@ -42,7 +42,7 @@ public class AnalyzerStringUtils
 				bodyEndIndex = text.length() - 1;
 			}
 			
-			parseResult.Header = text.substring(bodyStartIndex, bodyEndIndex);
+			parseResult.Body = text.substring(bodyStartIndex, bodyEndIndex);
 			
 			result.add(parseResult);
 		}
@@ -50,11 +50,13 @@ public class AnalyzerStringUtils
 		return result;			
 	}
 	
-	public static List<String> tokenizeString(Analyzer analyzer, String text) {
+	public static List<String> tokenizeString(Analyzer analyzer, String text) throws IOException {
 	    List<String> tokens = new ArrayList<String>();
 	    
+	    TokenStream stream  = null; 
+	    		
 	    try {
-	      TokenStream stream  = analyzer.tokenStream(null, new StringReader(text));
+	      stream  = analyzer.tokenStream(null, new StringReader(text));
 	      stream.reset();
 	      while (stream.incrementToken()) {
 	    	  tokens.add(stream.getAttribute(CharTermAttribute.class).toString());
@@ -63,6 +65,12 @@ public class AnalyzerStringUtils
 	
 	      // not thrown b/c we're using a string reader...
 	      throw new RuntimeException(e);
+	    }
+	    finally{
+	    	if (stream != null) {
+	    		stream.close();	
+	    	}
+	    	
 	    }
 	    
 	    return tokens;

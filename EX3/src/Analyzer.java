@@ -31,7 +31,7 @@ public class Analyzer {
 		m_ResultsWriter = new ResultsWriter();
 	}
 	
-	public void run(String parametersFileName) throws IOException, ParseException {
+	public void run(String parametersFileName) throws IOException, ParseException, org.apache.lucene.queryparser.classic.ParseException {
 		
 		// Initialize the lucene analyzer
 		StandardAnalyzer analyzer = new StandardAnalyzer();
@@ -61,7 +61,7 @@ public class Analyzer {
 		WriteQueriesResultsToFile(queriesResults, outputFile);
 	}
 
-	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer) throws IOException 
+	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer) throws IOException, org.apache.lucene.queryparser.classic.ParseException 
 	{
 		List<AnalyzerQuery> queries = m_QueriesReader.readQueries(queryFile, analyzer);
 		
