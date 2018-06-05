@@ -49,7 +49,7 @@ public class QueriesReader {
 
 		List<String> queryTokensList = AnalyzerStringUtils.tokenizeString(analyzer, body);
 		
-		String queryTokens = Concat(queryTokensList, "\n");
+		String queryTokens = Concat(queryTokensList, " ");
 		
 		Query query = new QueryParser("title", analyzer).parse(queryTokens);
 		
