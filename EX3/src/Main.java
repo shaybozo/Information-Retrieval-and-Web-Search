@@ -15,16 +15,20 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-
 import java.io.IOException;
 
 public class Main {
 
 	  public static void main(String[] args) throws IOException, ParseException {
 		  
+		  Analyzer analyzer = new Analyzer();
 		  
+		  //String parametersFileName = args[0];
+		  String parametersFileName = "../hw3_all_files/parameters.txt";
 		  
-		  // runLuceneExample(args);
+		  analyzer.run(parametersFileName);
+		  
+		  System.out.println("Finished");
 	  }
 	  
 	  private static void runLuceneExample(String[] args) throws IOException, ParseException {
