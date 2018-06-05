@@ -1,4 +1,3 @@
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
@@ -16,11 +15,10 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
-//import org.apache.lucene.util.Version;
 
 import java.io.IOException;
 
-public class Main {
+public class DataRetriever {
 
 	  public static void main(String[] args) throws IOException, ParseException {
 	    // 0. Specify the analyzer for tokenizing text.
