@@ -53,7 +53,7 @@ public class Analyzer {
 		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer); // TODO:SHAY
 		
 		// Load all documents from file into the IndexWriter and index them
-		LoadAllDocs(indexWriter, docsFile, isImprovedAlgo); // TODO:YRHUDA
+		LoadAllDocs(indexWriter, docsFile, isImprovedAlgo, analyzer); // TODO:YRHUDA
 		
 		// Run queries
 		List<QueryResult> queriesResults = ExecuteQueries(indexWriter, queries); // TODO:SHAY
@@ -68,8 +68,9 @@ public class Analyzer {
 		return queries;
 	}
 	
-	private void LoadAllDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo) throws IOException, ParseException {
-		m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, isImprovedAlgo);	
+	private void LoadAllDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo, StandardAnalyzer analyzer) throws IOException, ParseException {
+		m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, isImprovedAlgo, analyzer);
+		indexWriter.close();
 	}
 
 	private List<QueryResult> ExecuteQueries(IndexWriter indexWriter, List<AnalyzerQuery> queries) {
