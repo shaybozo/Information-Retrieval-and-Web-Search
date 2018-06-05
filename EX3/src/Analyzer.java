@@ -60,7 +60,7 @@ public class Analyzer {
 		WriteQueriesResultsToFile(queriesResults, outputFile);
 	}
 
-	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer) 
+	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer) throws IOException 
 	{
 		List<AnalyzerQuery> queries = m_QueriesReader.readQueries(queryFile, analyzer);
 		
