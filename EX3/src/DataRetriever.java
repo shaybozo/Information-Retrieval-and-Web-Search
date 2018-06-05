@@ -20,7 +20,7 @@ import org.apache.lucene.store.RAMDirectory;
 
 import java.io.IOException;
 
-public class Main {
+public class DataRetriever {
 
 	  public static void main(String[] args) throws IOException, ParseException {
 	    // 0. Specify the analyzer for tokenizing text.
