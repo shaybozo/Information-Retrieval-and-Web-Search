@@ -18,10 +18,13 @@ import org.apache.lucene.store.RAMDirectory;
 
 import java.io.IOException;
 
-public class DataRetriever {
+public class Main {
 
 	  public static void main(String[] args) throws IOException, ParseException {
-		  runLuceneExample(args);
+		  
+		  
+		  
+		  // runLuceneExample(args);
 	  }
 	  
 	  private static void runLuceneExample(String[] args) throws IOException, ParseException {
