@@ -2,6 +2,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.ParseException;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -30,7 +31,7 @@ public class Analyzer {
 		m_ResultsWriter = new ResultsWriter();
 	}
 	
-	public void run(String parametersFileName) throws IOException {
+	public void run(String parametersFileName) throws IOException, ParseException {
 		
 		// Initialize the lucene analyzer
 		StandardAnalyzer analyzer = new StandardAnalyzer();
@@ -67,7 +68,7 @@ public class Analyzer {
 		return queries;
 	}
 	
-	private void LoadAllDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo) {
+	private void LoadAllDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo) throws IOException, ParseException {
 		m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, isImprovedAlgo);	
 	}
 

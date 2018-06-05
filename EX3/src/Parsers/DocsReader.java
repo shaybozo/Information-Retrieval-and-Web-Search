@@ -53,24 +53,7 @@ public class DocsReader {
 	    }
 	    
 	    for (Document doc : docs) {
-	    	doc.Tokens = 
+	    	//doc.Tokens = 
 	    }
 	}
-	
-	  public static List<String> tokenizeString(Analyzer analyzer, String text) {
-	    List<String> tokens = new ArrayList<String>();
-	    
-	    try {
-	      TokenStream stream  = analyzer.tokenStream(null, new StringReader(text));
-	      stream.reset();
-	      while (stream.incrementToken()) {
-	    	  tokens.add(stream.getAttribute(CharTermAttribute.class).toString());
-	      }
-	    } catch (IOException e) {
-
-	      // not thrown b/c we're using a string reader...
-	      throw new RuntimeException(e);
-	    }
-	    return tokens;
-	  }
 }
