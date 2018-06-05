@@ -1,11 +1,11 @@
 package Dto;
 import java.util.*;
 
-public class Document {
+public class ParsedDocument {
 
 	public String Text;
 	
-	public String Tokens;
+	public List<String> Tokens;
 	
 	public String DocId; 
 	
