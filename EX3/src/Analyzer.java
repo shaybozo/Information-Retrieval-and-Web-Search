@@ -3,9 +3,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
 import org.apache.lucene.index.IndexWriter;
@@ -62,7 +62,7 @@ public class Analyzer {
 		LoadAllDocs(indexWriter, docsFile, isImprovedAlgo, analyzer); // TODO:YRHUDA
 		
 		// Run queries
-		List<QueryResult> queriesResults = ExecuteQueries(indexWriter, queries); // TODO:SHAY
+		List<QueryResult> queriesResults = ExecuteQueries(index, queries);
 		
 		WriteQueriesResultsToFile(queriesResults, outputFile);
 	}
@@ -79,26 +79,39 @@ public class Analyzer {
 		indexWriter.close();
 	}
 
-	private List<QueryResult> ExecuteQueries(IndexWriter indexWriter, List<AnalyzerQuery> queries) {
-	    // 3. search
+	private List<QueryResult> ExecuteQueries(Directory index, List<AnalyzerQuery> queries) throws IOException {
+	    
+		List<QueryResult> result = new ArrayList<QueryResult>();
 	    int hitsPerPage = 10;
 	    IndexReader reader = DirectoryReader.open(index);
 	    IndexSearcher searcher = new IndexSearcher(reader);
-	    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, new ScoreDoc(10, 10) /*true*/);
-	    searcher.search(q, collector);
-	    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+	    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, new ScoreDoc(10, 10));
 	    
-	    // 4. display results
-	    System.out.println("Found " + hits.length + " hits.");
-	    for(int i=0;i<hits.length;++i) {
-	      int docId = hits[i].doc;
-	      Document d = searcher.doc(docId);
-	      System.out.println((i + 1) + ". " + d.get("isbn") + "\t" + d.get("title"));
+	    for(AnalyzerQuery query : queries)
+	    {
+	    	searcher.search(query.Query, collector);
+		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
+		    
+		    QueryResult queryResult = new QueryResult();
+		    queryResult.QueryId = query.QueryId;
+		    queryResult.HittedDocs = getHittedDocs(hits);
 	    }
-
-	    // reader can only be closed when there
-	    // is no need to access the documents any more.
+	    
 	    reader.close();
+	    
+	    return result;
+	}
+	
+	private int[] getHittedDocs(ScoreDoc[] hits)
+	{
+		int[] result = new int[hits.length];
+		
+	    for(int i=0;i<hits.length;++i) 
+	    {
+	    	result[i] = hits[i].doc;
+        }
+	    
+		return result;
 	}
 	
 	private void WriteQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException {
