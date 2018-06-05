@@ -1,4 +1,0 @@
-queryFile=data/queries.txt
-docsFile=data/docs.txt
-outputFile=out/output.txt
-retrievalAlgorithm=basic

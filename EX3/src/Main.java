@@ -19,12 +19,12 @@ import java.io.IOException;
 
 public class Main {
 
-	  public static void main(String[] args) throws IOException, ParseException {
+	  public static void main(String[] args) throws IOException, ParseException, java.text.ParseException {
 		  
 		  Analyzer analyzer = new Analyzer();
 		  
 		  //String parametersFileName = args[0];
-		  String parametersFileName = "../hw3_all_files/parameters.txt";
+		  String parametersFileName = "data/parameters.txt";
 		  
 		  analyzer.run(parametersFileName);
 		  
