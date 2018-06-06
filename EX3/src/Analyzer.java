@@ -3,6 +3,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -42,8 +43,8 @@ public class Analyzer {
 		// Initialize the lucene analyzer
 		StandardAnalyzer analyzer = new StandardAnalyzer();
 	    Directory index = new RAMDirectory();
-	    IndexWriterConfig config = new IndexWriterConfig(analyzer);
-	    IndexWriter indexWriter = new IndexWriter(index, config);
+	    IndexWriterConfig indexWritercConfig = new IndexWriterConfig(analyzer);
+	    IndexWriter indexWriter = new IndexWriter(index, indexWritercConfig);
 	    
 	    // Retrieve the parameters from file 
 		Path parametersFilePath = Paths.get(parametersFileName);
@@ -57,9 +58,9 @@ public class Analyzer {
 		
 		// Load Queries from file and prepare them for execution
 		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer);
-		
+				
 		// Load all documents from file into the IndexWriter and index them
-		LoadAllDocs(indexWriter, docsFile, isImprovedAlgo, analyzer); // TODO:YRHUDA
+		LoadAllDocs(indexWriter, docsFile, isImprovedAlgo, analyzer); // TODsO:YRHUDA
 		
 		// Run queries
 		List<QueryResult> queriesResults = ExecuteQueries(index, queries);
@@ -95,6 +96,8 @@ public class Analyzer {
 		    QueryResult queryResult = new QueryResult();
 		    queryResult.QueryId = query.QueryId;
 		    queryResult.HittedDocs = getHittedDocs(hits);
+		    
+		    result.add(queryResult);
 	    }
 	    
 	    reader.close();
