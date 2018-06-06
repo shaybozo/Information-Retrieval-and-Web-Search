@@ -9,6 +9,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
@@ -17,46 +18,55 @@ import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
+import org.apache.lucene.queryparser.classic.QueryParser;
+import org.apache.lucene.search.Query;
 
-import Dto.ParsedDocument;
+import Dto.AnalyzerQuery;
+import Dto.ParseResult;
+import Dto.AnalyzerDocument;
 
 public class DocsReader {
 
 	public void LoadAndIndexDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo, StandardAnalyzer analyzer) throws IOException, ParseException {
-		ArrayList<ParsedDocument> docs = new ArrayList<ParsedDocument>(); 
-		
+	
 		int errorCount = 0;
+	
+		
 		Path  docsFilePath = Paths.get(docsFile);
-	    byte[] encoded = Files.readAllBytes(docsFilePath);
-	    String docsString =  new String(encoded);
-	    
-	    String[] documentStrings = docsString.split("\\*TEXT ");
-	    
-	    for (String documentString : documentStrings) {
-	    	String[] tokens = documentString.split("\\r|\\n| ");
-	    	
-	    	if (tokens.length < 4) {
-	    		continue;
+		List<String> docsLines = Files.readAllLines(docsFilePath);
+
+		// Parse documents
+		String docsfileText = AnalyzerStringUtils.Concat(docsLines, "\n");
+		List<ParseResult> parsedResults = AnalyzerStringUtils.parseText(docsfileText, "*TEXT");
+		List<AnalyzerDocument> parsedDocuments = new ArrayList<AnalyzerDocument>();
+		for(ParseResult parsedResult : parsedResults)
+		{
+			AnalyzerDocument analyzerDocument = new AnalyzerDocument();
+			
+			String[] headerTokens = parsedResult.Header.split(" ");
+			if (headerTokens.length != 5) {
+				errorCount++;
 	    	}
-	    	ParsedDocument doc = new ParsedDocument();
-	    	
-	    	doc.DocId = tokens[0];
-	    	
+			
+			analyzerDocument.DocId = headerTokens[1];
+
 	    	try { //best effort. TODO: improve later
 	    		DateFormat format = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
-	    		doc.Date = format.parse(tokens[1]);
-	    	} catch(Exception ex ) { errorCount++;}; 
-	    	
-	    	try { //best effort. TODO: improve later
-	    		doc.PageNumber = Integer.parseInt(tokens[3]);
+	    		analyzerDocument.Date = format.parse(headerTokens[2]);
 	    	} catch(Exception ex ) { errorCount++;};
 	    	
-	    	doc.Text = String.join(" ", Arrays.copyOfRange(tokens, 4, tokens.length - 1));
+	    	try { //best effort. TODO: improve later
+	    		analyzerDocument.PageNumber = Integer.parseInt(headerTokens[4]);
+	    	} catch(Exception ex ) { errorCount++;};
 	    	
-	    	docs.add(doc);
-	    }
-	    
-	    for (ParsedDocument parsedDoc : docs) {
+			analyzerDocument.Text = BuildLuceneText(parsedResult.Body, analyzer);
+			
+			parsedDocuments.add(analyzerDocument);
+		}	
+		
+		// Store Documents
+
+	    for (AnalyzerDocument parsedDoc : parsedDocuments) {
 	    	//doc.Tokens = AnalyzerStringUtils.tokenizeString(analyzer, doc.Text);
 		    Document doc = new Document();
 		    doc.add(new TextField(Consts.FIELD_NAME_CONTENT, parsedDoc.Text, Field.Store.YES));
@@ -68,5 +78,14 @@ public class DocsReader {
 		    
 		    indexWriter.addDocument(doc);
 	    }
+	}
+	
+	private String BuildLuceneText(String body, StandardAnalyzer analyzer) throws ParseException, IOException {
+
+		List<String> textTokensList = AnalyzerStringUtils.tokenizeString(analyzer, body);
+		
+		String textTokens = AnalyzerStringUtils.Concat(textTokensList, " ");
+		
+		return textTokens;
 	}
 }

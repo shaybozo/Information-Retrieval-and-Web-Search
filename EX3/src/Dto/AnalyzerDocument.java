@@ -1,7 +1,7 @@
 package Dto;
 import java.util.*;
 
-public class ParsedDocument {
+public class AnalyzerDocument {
 
 	public String Text;
 	
