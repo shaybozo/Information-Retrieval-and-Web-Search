@@ -41,6 +41,7 @@ public class ResultsWriter
 			}
 			
 			sb.append("\n");
+			sb.append("\n");
 		}
 		
 		String result = sb.toString();

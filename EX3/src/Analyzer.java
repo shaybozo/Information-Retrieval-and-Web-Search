@@ -84,12 +84,12 @@ public class Analyzer {
 	    
 		List<QueryResult> result = new ArrayList<QueryResult>();
 	    int hitsPerPage = 10;
-	    IndexReader reader = DirectoryReader.open(index);
-	    IndexSearcher searcher = new IndexSearcher(reader);
-	    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage, new ScoreDoc(10, 10));
 	    
 	    for(AnalyzerQuery query : queries)
 	    {
+    	   IndexReader reader = DirectoryReader.open(index);
+		    IndexSearcher searcher = new IndexSearcher(reader);
+		    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
 	    	searcher.search(query.Query, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		    
@@ -97,10 +97,14 @@ public class Analyzer {
 		    queryResult.QueryId = query.QueryId;
 		    queryResult.HittedDocs = getHittedDocs(hits);
 		    
+		    // TODO:SHAY - remove test code
+		    System.out.println("Query " + query.QueryId + " number of hits: " + hits.length);
+		    System.out.println();
+		    
 		    result.add(queryResult);
+		    
+		    reader.close();
 	    }
-	    
-	    reader.close();
 	    
 	    return result;
 	}

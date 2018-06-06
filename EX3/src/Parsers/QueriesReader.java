@@ -49,7 +49,7 @@ public class QueriesReader {
 		
 		String queryTokens = AnalyzerStringUtils.Concat(queryTokensList, " ");
 		
-		Query query = new QueryParser("title", analyzer).parse(queryTokens);
+		Query query = new QueryParser(Consts.FIELD_NAME_CONTENT, analyzer).parse(queryTokens);
 		
 		return query;
 	}
