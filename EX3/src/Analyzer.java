@@ -4,6 +4,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
@@ -109,14 +110,30 @@ public class Analyzer {
 	
 	private int[] getHittedDocs(ScoreDoc[] hits)
 	{
-		int[] result = new int[hits.length];
+		ArrayList<Integer> result = new ArrayList<Integer>();
 		
-	    for(int i=0;i<hits.length;++i) 
+	    for(int i = 0; i < hits.length; i++) 
 	    {
-	    	result[i] = hits[i].doc;
+	    	if (hits[i].score > 10)
+	    	{
+	    		result.add(hits[i].doc);
+	    	}
         }
 	    
-		return result;
+		return convertIntegers(result);
+	}
+	
+	public static int[] convertIntegers(List<Integer> integers)
+	{
+	    int[] ret = new int[integers.size()];
+	    for (int i=0; i < ret.length; i++)
+	    {
+	        ret[i] = integers.get(i).intValue();
+	    }
+	    
+	    Arrays.sort(ret);
+	    
+	    return ret;
 	}
 	
 	private void WriteQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException {

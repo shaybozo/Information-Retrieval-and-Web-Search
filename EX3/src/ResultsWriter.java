@@ -34,7 +34,7 @@ public class ResultsWriter
 				sb.append(" ");
 				for (int hittedDoc : queryResult.HittedDocs)
 				{
-					sb.append(hittedDoc);
+					sb.append(hittedDoc + 1);
 					sb.append(" ");
 				}
 			}

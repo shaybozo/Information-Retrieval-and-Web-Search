@@ -7,10 +7,9 @@ public class AnalyzerDocument {
 	
 	public List<String> Tokens;
 	
-	public String DocId; 
+	public int DocId; 
 	
 	public Date Date;
 	
-	public int PageNumber;
-	
+	public int PageNumber;	
 }

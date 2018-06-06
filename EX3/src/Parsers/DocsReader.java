@@ -41,7 +41,7 @@ public class DocsReader {
 				errorCount++;
 	    	}
 			
-			analyzerDocument.DocId = headerTokens[1];
+			analyzerDocument.DocId = Integer.parseInt(headerTokens[1]) + 10;
 
 	    	try { //best effort. TODO: improve later
 	    		DateFormat format = new SimpleDateFormat("dd/MM/yy", Locale.ENGLISH);
@@ -65,7 +65,7 @@ public class DocsReader {
 		    doc.add(new TextField(Consts.FIELD_NAME_CONTENT, parsedDoc.Text, Field.Store.YES));
 
 		    // use a string field for isbn because we don't want it tokenized
-		    doc.add(new StringField("isbn", parsedDoc.DocId, Field.Store.YES)); // TODO: check if needed 
+		    //doc.add(new StringField("isbn", Integer.toString(parsedDoc.DocId), Field.Store.YES)); // TODO: check if needed 
 		    // doc.add(new StringField("date", parsedDoc.Date.toString(), Field.Store.YES)); // TODO: needed? string field? store? 
 		    // doc.add(new StringField("pageNumber", parsedDoc.PageNumber, Field.Store.YES)); // TODO: right?
 		    
