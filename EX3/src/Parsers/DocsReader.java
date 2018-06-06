@@ -8,20 +8,14 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
-import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.Query;
-
-import Dto.AnalyzerQuery;
 import Dto.ParseResult;
 import Dto.AnalyzerDocument;
 
@@ -30,7 +24,6 @@ public class DocsReader {
 	public void LoadAndIndexDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo, StandardAnalyzer analyzer) throws IOException, ParseException {
 	
 		int errorCount = 0;
-	
 		
 		Path  docsFilePath = Paths.get(docsFile);
 		List<String> docsLines = Files.readAllLines(docsFilePath);
