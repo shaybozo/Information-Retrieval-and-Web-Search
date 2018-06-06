@@ -14,6 +14,7 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 import Dto.AnalyzerQuery;
 import Dto.ParseResult;
+import Main.Constants;
 
 public class QueriesReader {
 
@@ -24,7 +25,6 @@ public class QueriesReader {
 	    
 		List<String> queries = Files.readAllLines(queriesFilePath);
 		
-	
 		String doc = AnalyzerStringUtils.Concat(queries, "\n");
 		List<ParseResult> parsedQueries = AnalyzerStringUtils.parseText(doc, "*FIND");
 		
@@ -49,7 +49,7 @@ public class QueriesReader {
 		
 		String queryTokens = AnalyzerStringUtils.Concat(queryTokensList, " ");
 		
-		Query query = new QueryParser(Consts.FIELD_NAME_CONTENT, analyzer).parse(queryTokens);
+		Query query = new QueryParser(Constants.FIELD_NAME_CONTENT, analyzer).parse(queryTokens);
 		
 		return query;
 	}

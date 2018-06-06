@@ -13,10 +13,10 @@ import java.util.Locale;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import Dto.ParseResult;
+import Main.Constants;
 import Dto.AnalyzerDocument;
 
 public class DocsReader {
@@ -62,10 +62,10 @@ public class DocsReader {
 	    for (AnalyzerDocument parsedDoc : parsedDocuments) {
 	    	//doc.Tokens = AnalyzerStringUtils.tokenizeString(analyzer, doc.Text);
 		    Document doc = new Document();
-		    doc.add(new TextField(Consts.FIELD_NAME_CONTENT, parsedDoc.Text, Field.Store.YES));
+		    doc.add(new TextField(Constants.FIELD_NAME_CONTENT, parsedDoc.Text, Field.Store.YES));
 
 		    // use a string field for isbn because we don't want it tokenized
-		    //doc.add(new StringField("isbn", Integer.toString(parsedDoc.DocId), Field.Store.YES)); // TODO: check if needed 
+		    doc.add(new TextField("isbn", Integer.toString(parsedDoc.DocId), Field.Store.YES)); // TODO: check if needed 
 		    // doc.add(new StringField("date", parsedDoc.Date.toString(), Field.Store.YES)); // TODO: needed? string field? store? 
 		    // doc.add(new StringField("pageNumber", parsedDoc.PageNumber, Field.Store.YES)); // TODO: right?
 		    
@@ -73,8 +73,8 @@ public class DocsReader {
 	    }
 	}
 	
-	private String BuildLuceneText(String body, StandardAnalyzer analyzer) throws ParseException, IOException {
-
+	private String BuildLuceneText(String body, StandardAnalyzer analyzer) throws ParseException, IOException 
+	{
 		List<String> textTokensList = AnalyzerStringUtils.tokenizeString(analyzer, body);
 		
 		String textTokens = AnalyzerStringUtils.Concat(textTokensList, " ");

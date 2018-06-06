@@ -1,3 +1,4 @@
+package Main;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -82,13 +83,12 @@ public class Analyzer {
 	private List<QueryResult> ExecuteQueries(Directory index, List<AnalyzerQuery> queries) throws IOException {
 	    
 		List<QueryResult> result = new ArrayList<QueryResult>();
-	    int hitsPerPage = 10;
 	    
 	    for(AnalyzerQuery query : queries)
 	    {
     	   IndexReader reader = DirectoryReader.open(index);
 		    IndexSearcher searcher = new IndexSearcher(reader);
-		    TopScoreDocCollector collector = TopScoreDocCollector.create(hitsPerPage);
+		    TopScoreDocCollector collector = TopScoreDocCollector.create(Constants.HITS_PER_PAGE);
 	    	searcher.search(query.Query, collector);
 		    ScoreDoc[] hits = collector.topDocs().scoreDocs;
 		    
@@ -97,7 +97,7 @@ public class Analyzer {
 		    queryResult.HittedDocs = getHittedDocs(hits);
 		    
 		    // TODO:SHAY - remove test code
-		    System.out.println("Query " + query.QueryId + " number of hits: " + hits.length);
+		    System.out.println("Query " + query.QueryId + " number of hits: " + queryResult.HittedDocs.length);
 		    System.out.println();
 		    
 		    result.add(queryResult);
@@ -114,7 +114,7 @@ public class Analyzer {
 		
 	    for(int i = 0; i < hits.length; i++) 
 	    {
-	    	if (hits[i].score > 10)
+	    	if (hits[i].score > Constants.SCORE_THRESHOLD)
 	    	{
 	    		result.add(hits[i].doc);
 	    	}
@@ -123,7 +123,7 @@ public class Analyzer {
 		return convertIntegers(result);
 	}
 	
-	public static int[] convertIntegers(List<Integer> integers)
+	private static int[] convertIntegers(List<Integer> integers)
 	{
 	    int[] ret = new int[integers.size()];
 	    for (int i=0; i < ret.length; i++)
