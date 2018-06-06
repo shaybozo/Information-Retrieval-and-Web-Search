@@ -24,7 +24,6 @@ public class QueriesReader {
 	    
 		List<String> queries = Files.readAllLines(queriesFilePath);
 		
-	
 		String doc = AnalyzerStringUtils.Concat(queries, "\n");
 		List<ParseResult> parsedQueries = AnalyzerStringUtils.parseText(doc, "*FIND");
 		
@@ -49,7 +48,7 @@ public class QueriesReader {
 		
 		String queryTokens = AnalyzerStringUtils.Concat(queryTokensList, " ");
 		
-		Query query = new QueryParser("title", analyzer).parse(queryTokens);
+		Query query = new QueryParser("content", analyzer).parse(queryTokens);
 		
 		return query;
 	}
