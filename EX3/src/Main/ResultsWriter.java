@@ -7,6 +7,7 @@ import Dto.QueryResult;
 
 public class ResultsWriter 
 {
+	// Write the queries results to the output file
 	public void writeQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException 
 	{
 		File resultsFile = new File(outputFile);

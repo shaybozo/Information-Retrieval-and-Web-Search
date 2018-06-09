@@ -12,6 +12,7 @@ import Dto.ParseResult;
 
 public class AnalyzerStringUtils 
 {
+	// Parse the text to header and body parts
 	public static List<ParseResult> parseText(String text, String headerPrefix)
 	{
 		List<ParseResult> result = new ArrayList<ParseResult>();
@@ -50,6 +51,7 @@ public class AnalyzerStringUtils
 		return result;			
 	}
 	
+	// Concat a given string list into a single string
 	public static String Concat(List<String> queries, String delimiter)
 	{
 		StringBuilder builder = new StringBuilder();
@@ -62,6 +64,7 @@ public class AnalyzerStringUtils
 		return str;
 	}
 	
+	// Tokenize the given string using the lucene Analyzer
 	public static List<String> tokenizeString(Analyzer analyzer, String text) throws IOException {
 	    List<String> tokens = new ArrayList<String>();
 	    

@@ -3,7 +3,8 @@ import java.io.IOException;
 
 public class Main {
 
-	  public static void main(String[] args) throws IOException, java.text.ParseException, org.apache.lucene.queryparser.classic.ParseException 
+	  public static void main(String[] args) throws IOException, java.text.ParseException, 
+							org.apache.lucene.queryparser.classic.ParseException 
 	  {
 		  Analyzer analyzer = new Analyzer();
 		  

@@ -4,8 +4,9 @@ import java.util.List;
 
 public class ParametersReader {
 
-	public String getQueryFilePath(List<String> parameters) {
-		
+	// Retrieve the QueryFilePath from the parameters file
+	public String getQueryFilePath(List<String> parameters) 
+	{		
 		String result = null;
 		
 		for(String s : parameters)
@@ -20,6 +21,7 @@ public class ParametersReader {
 		return result;
 	}
 
+	// Retrieve the DocsFilePath from the parameters file
 	public String getDocsFilePath(List<String> parameters) {
 		
 		String result = null;
@@ -36,6 +38,7 @@ public class ParametersReader {
 		return result;
 	}
 
+	// Retrieve the OutputFilePath from the parameters file
 	public String getOutputFilePath(List<String> parameters) {
 		
 		String result = null;
@@ -52,6 +55,7 @@ public class ParametersReader {
 		return result;
 	}
 
+	// Retrieve the algo type from the parameters file
 	public String getRetrievalAlgorithm(List<String> parameters) {
 		
 		String result = null;

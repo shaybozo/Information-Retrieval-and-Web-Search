@@ -18,9 +18,11 @@ import Main.Constants;
 
 public class QueriesReader {
 
-	public List<AnalyzerQuery> readQueries(String queriesFile, StandardAnalyzer analyzer) throws IOException, ParseException 
+	// Load the queries from queries file and prepare them for execution using lucene
+	public List<AnalyzerQuery> readQueries(String queriesFile, StandardAnalyzer analyzer) 
+			throws IOException, ParseException 
 	{
-		// Retrieve the parameters from file 
+		// Retrieve the queries from file 
 		Path queriesFilePath = Paths.get(queriesFile);
 	    
 		List<String> queries = Files.readAllLines(queriesFilePath);

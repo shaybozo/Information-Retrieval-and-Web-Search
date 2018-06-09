@@ -21,8 +21,10 @@ import Dto.AnalyzerDocument;
 
 public class DocsReader {
 
-	public void LoadAndIndexDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo, StandardAnalyzer analyzer) throws IOException, ParseException {
-	
+	// Load all documents from the documents file into the IndexWriter and index them
+	public void LoadAndIndexDocs(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo, 
+								 StandardAnalyzer analyzer) throws IOException, ParseException 
+	{
 		int errorCount = 0;
 		
 		Path  docsFilePath = Paths.get(docsFile);
