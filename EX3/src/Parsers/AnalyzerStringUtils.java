@@ -65,8 +65,9 @@ public class AnalyzerStringUtils
 	}
 	
 	// Tokenize the given string using the lucene Analyzer
-	public static List<String> tokenizeString(Analyzer analyzer, String text) throws IOException {
-	    List<String> tokens = new ArrayList<String>();
+	public static List<String> tokenizeString(Analyzer analyzer, String text) throws IOException 
+	{
+		List<String> tokens = new ArrayList<String>();
 	    
 	    TokenStream stream  = null; 
 	    		
@@ -76,16 +77,16 @@ public class AnalyzerStringUtils
 	      while (stream.incrementToken()) {
 	    	  tokens.add(stream.getAttribute(CharTermAttribute.class).toString());
 	      }
-	    } catch (IOException e) {
-	
+	    } catch (IOException e) 
+	    {	
 	      // not thrown b/c we're using a string reader...
 	      throw new RuntimeException(e);
 	    }
 	    finally{
-	    	if (stream != null) {
+	    	if (stream != null) 
+	    	{
 	    		stream.close();	
 	    	}
-	    	
 	    }
 	    
 	    return tokens;

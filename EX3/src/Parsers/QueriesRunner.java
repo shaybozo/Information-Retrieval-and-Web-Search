@@ -49,7 +49,7 @@ public class QueriesRunner {
 	    {
 	    	if (hits[i].score > Constants.SCORE_THRESHOLD)
 	    	{
-	    		result.add(hits[i].doc);
+	    		result.add(hits[i].doc + 1);// Because the doc is added in zero based way
 	    	}
         }
 	    

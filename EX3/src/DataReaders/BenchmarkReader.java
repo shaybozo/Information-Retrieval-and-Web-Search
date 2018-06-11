@@ -5,18 +5,17 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import org.apache.lucene.queryparser.classic.ParseException;
 import Dto.QueryTruthResult;
+import Main.Constants;
 
 public class BenchmarkReader 
 {
-	public final static String QUERIES_TRUTH_RESULTS_FILE_PATH = "data/truth.txt";
-	
 	public List<QueryTruthResult> readQueriesTruthResults() throws IOException
 	{
 		// Retrieve the truth results from file 
-		Path queriesFilePath = Paths.get(QUERIES_TRUTH_RESULTS_FILE_PATH);
+		Path queriesFilePath = Paths.get(Constants.QUERIES_TRUTH_RESULTS_FILE_PATH);
 	    
 		List<String> queriesTruthResultsString = Files.readAllLines(queriesFilePath);
 
@@ -24,26 +23,57 @@ public class BenchmarkReader
 		
 		for(String queryResult : queriesTruthResultsString)
 		{
-			QueryTruthResult queryTruthResult = new QueryTruthResult();
-			
-			queryTruthResult.QueryId = getQueryNumberFromHeader(queryResult);
-			queryTruthResult.HittedDocs = getHittedDocs(queryResult);
-			
-			queriesTruthResults.add(queryTruthResult);
+			if(queryResult != null && !queryResult.isEmpty() && !queryResult.trim().isEmpty())
+			{
+				QueryTruthResult queryTruthResult = getQueryTruthResult(queryResult);
+				
+				queriesTruthResults.add(queryTruthResult);	
+			}
 		}
 		
 		return queriesTruthResults;
 	}
+		
+	private QueryTruthResult getQueryTruthResult(String s)
+	{
+		QueryTruthResult queryTruthResult = new QueryTruthResult();
+		
+		List<Integer> hittedDocsList = new ArrayList<Integer>();
+		
+		int i = 0;
+		
+		while(i < s.length()) 
+		{
+			while (i < s.length() && !Character.isDigit(s.charAt(i))) 
+			{
+				i++;
+			}
+			
+			int j = i;
+			
+			while (j < s.length() && Character.isDigit(s.charAt(j))) 
+			{
+				j++;
+			}
+			
+			hittedDocsList.add(Integer.parseInt(s.substring(i, j)));
+			
+			i = j + 1;
+		}
+		
+		Iterator<Integer> iter = hittedDocsList.iterator();
 
-	private int getQueryNumberFromHeader(String queryResult) 
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-	
-	private int[] getHittedDocs(String queryResult) 
-	{
-		// TODO Auto-generated method stub
-		return new int[] {1, 2, 3, 4, 5};
+		queryTruthResult.QueryId = iter.next();
+		queryTruthResult.HittedDocs = new int[hittedDocsList.size() - 1];
+		
+		int j = 0;
+		
+		while(iter.hasNext())
+		{
+			queryTruthResult.HittedDocs[j] = iter.next();
+			j++;
+		}
+		
+		return queryTruthResult;
 	}
 }
