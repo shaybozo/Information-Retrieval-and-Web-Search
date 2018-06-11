@@ -3,10 +3,26 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+
+import org.apache.lucene.queryparser.classic.ParseException;
+
+import DataReaders.BenchmarkReader;
+import DataReaders.DocsReader;
+import DataReaders.ParametersReader;
+import DataReaders.QueriesReader;
 import Dto.QueryResult;
+import Dto.QueryTruthResult;
+import Parsers.QueriesRunner;
 
 public class ResultsWriter 
 {
+	private BenchmarkReader m_BenchmarkReader = null;
+	
+	public ResultsWriter()
+	{
+		m_BenchmarkReader = new BenchmarkReader();
+	}
+	
 	// Write the queries results to the output file
 	public void writeQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException 
 	{
@@ -22,7 +38,12 @@ public class ResultsWriter
 	    
 	    oFile.close();
 	}
-
+	
+	public void CalculatePrecisionAndRecall(List<QueryResult> calculatedQueriesResults) throws IOException 
+	{
+		List<QueryTruthResult> queriesTruthResults = m_BenchmarkReader.readQueriesTruthResults();
+	}
+	
 	private String parseQueriesResults(List<QueryResult> queriesResults)
 	{
 		StringBuilder sb = new StringBuilder();

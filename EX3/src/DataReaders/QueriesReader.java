@@ -1,4 +1,4 @@
-package Parsers;
+package DataReaders;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,6 +15,7 @@ import org.apache.lucene.search.Query;
 import Dto.AnalyzerQuery;
 import Dto.ParseResult;
 import Main.Constants;
+import Parsers.AnalyzerStringUtils;
 
 public class QueriesReader {
 

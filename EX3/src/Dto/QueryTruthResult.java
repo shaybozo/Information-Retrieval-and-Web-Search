@@ -1,6 +1,6 @@
 package Dto;
 
-public class QueryResult 
+public class QueryTruthResult 
 {
 	public int QueryId;
 	

@@ -51,7 +51,7 @@ public class AnalyzerStringUtils
 		return result;			
 	}
 	
-	// Concat a given string list into a single string
+	// Concatenate a given string list into a single string
 	public static String Concat(List<String> queries, String delimiter)
 	{
 		StringBuilder builder = new StringBuilder();

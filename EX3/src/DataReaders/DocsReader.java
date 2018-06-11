@@ -1,4 +1,4 @@
-package Parsers;
+package DataReaders;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,6 +17,7 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import Dto.ParseResult;
 import Main.Constants;
+import Parsers.AnalyzerStringUtils;
 import Dto.AnalyzerDocument;
 
 public class DocsReader {

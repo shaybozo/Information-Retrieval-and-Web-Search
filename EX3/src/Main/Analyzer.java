@@ -17,11 +17,12 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
+
+import DataReaders.DocsReader;
+import DataReaders.ParametersReader;
+import DataReaders.QueriesReader;
 import Dto.AnalyzerQuery;
 import Dto.QueryResult;
-import Parsers.DocsReader;
-import Parsers.ParametersReader;
-import Parsers.QueriesReader;
 import Parsers.QueriesRunner;
 
 // This class is the orchestrator of all the tasks that should be done
@@ -112,6 +113,7 @@ public class Analyzer {
 	private void WriteQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException 
 	{
 		m_ResultsWriter.writeQueriesResultsToFile(queriesResults, outputFile);
+		m_ResultsWriter.CalculatePrecisionAndRecall(queriesResults);
 	}
 	
 	// Private methods - end
