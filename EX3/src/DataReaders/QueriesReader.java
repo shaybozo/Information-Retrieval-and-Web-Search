@@ -5,6 +5,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,7 +22,7 @@ import Parsers.AnalyzerStringUtils;
 public class QueriesReader {
 
 	// Load the queries from queries file and prepare them for execution using lucene
-	public List<AnalyzerQuery> readQueries(String queriesFile, StandardAnalyzer analyzer) 
+	public List<AnalyzerQuery> readQueries(String queriesFile, StandardAnalyzer analyzer, Boolean isImprovedAlgo, HashSet<String> stopWords) 
 			throws IOException, ParseException 
 	{
 		// Retrieve the queries from file 
@@ -38,7 +40,15 @@ public class QueriesReader {
 			AnalyzerQuery analyzerQuery = new AnalyzerQuery();
 			
 			analyzerQuery.QueryId = getQueryNumberFromHeader(parsedQuery.Header);
-			analyzerQuery.Query = BuildLuceneQuery(parsedQuery.Body, analyzer);
+			
+			if (isImprovedAlgo) {
+				analyzerQuery.Query = buildLuceneQuery(parsedQuery.Body, analyzer);
+			} else {
+				// Tokenize without stop words removal
+				analyzerQuery.Query = buildTokenizedQuery(parsedQuery.Body, analyzer, stopWords);
+			}
+			
+			
 			
 			analyzedQueries.add(analyzerQuery);
 		}
@@ -46,7 +56,28 @@ public class QueriesReader {
 		return analyzedQueries;
 	}
 	
-	private Query BuildLuceneQuery(String body, StandardAnalyzer analyzer) throws ParseException, IOException {
+	private Query buildTokenizedQuery(String body, StandardAnalyzer analyzer, HashSet<String> stopWords) throws ParseException  
+	{
+		String bodyLowercase= body.toLowerCase(); // We lower case.
+		String bodyWithoutPanctuations = bodyLowercase.replaceAll("-|,|\\.|:|/|\\\\|\\`|;|:|!|@|#|$|%|^|&|[|]|\"|'", ""); // remove panctuations.
+		List<String> textTokensList = Arrays.asList(bodyWithoutPanctuations.split(" "));
+		
+		// Remove stop words from query
+		List<String> filteredTokensList = new ArrayList<String>();  
+		
+		for (String token: textTokensList) {
+			if (!stopWords.contains(token)) {
+				filteredTokensList.add(token);
+			}
+		}
+		
+		String queryTokens = AnalyzerStringUtils.Concat(filteredTokensList, " ");
+		Query query = new QueryParser(Constants.FIELD_NAME_CONTENT, analyzer).parse(queryTokens);
+		
+		return query;
+	}
+	
+	private Query buildLuceneQuery(String body, StandardAnalyzer analyzer) throws ParseException, IOException {
 
 		List<String> queryTokensList = AnalyzerStringUtils.tokenizeString(analyzer, body);
 		

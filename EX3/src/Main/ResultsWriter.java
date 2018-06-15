@@ -3,7 +3,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,7 +50,7 @@ public class ResultsWriter
 	{
 		List<QueryTruthResult> queriesTruthResults = m_BenchmarkReader.readQueriesTruthResults();
 		
-		File resultsFile = new File(Constants.REPORT_FILE_PATH);
+		File resultsFile = new File(new SimpleDateFormat(Constants.REPORT_FILE_PATH).format(new Date()));
 		resultsFile.createNewFile(); // if file already exists will do nothing 
 		FileOutputStream oFile = new FileOutputStream(resultsFile, false);
 		
@@ -57,22 +59,41 @@ public class ResultsWriter
 		sb.append("Queries report:");
 		sb.append("\n");
 		
+		double totalPrecision = 0.0;
+		double totalRecall = 0.0;
+		double totalFScore = 0.0;
+		
 		for(QueryTruthResult queryTruthResult : queriesTruthResults)
 		{
-			QueryResult queryResult = getQueryResult(calculatedQueriesResults, queryTruthResult.QueryId);
-			double totalCount = queryResult.HittedDocs.length;
-			double intersection = getIntersection(queryResult.HittedDocs, queryTruthResult.HittedDocs);
-			double turuHitsCount = queryTruthResult.HittedDocs.length;
+			QueryResult queryCalculatedResult = getQueryResult(calculatedQueriesResults, queryTruthResult.QueryId);
+			double calculatedQueryDocCount = queryCalculatedResult.HittedDocs.length;
+			double thruthQueryDocCount = queryTruthResult.HittedDocs.length;
+			double intersectionCount = getIntersectionSize(queryCalculatedResult.HittedDocs, queryTruthResult.HittedDocs);
 			
-			double precision = totalCount == 0 ? 0 : intersection / totalCount;
-			double recall = turuHitsCount == 0 ? 0 : intersection / turuHitsCount;
+			double precision = calculatedQueryDocCount == 0 ? 0 : intersectionCount / calculatedQueryDocCount;
+			double recall = thruthQueryDocCount == 0 ? 0 : intersectionCount / thruthQueryDocCount;
+			double fScore = precision == 0 || recall == 0 ? 0 : 2.0 * precision * recall / (precision + recall);
 			
 			sb.append("Query number " + queryTruthResult.QueryId + ": ");
-			sb.append("Precision: " + intersection + " / "  + totalCount + " = " + df2.format(precision));
+			sb.append("Precision: " + intersectionCount + " / "  + calculatedQueryDocCount + " = " + df2.format(precision));
 			sb.append("; ");
-			sb.append("Recall: " + intersection + " / "  + turuHitsCount + " = " + df2.format(recall));
+			sb.append("Recall: " + intersectionCount + " / "  + thruthQueryDocCount + " = " + df2.format(recall));
+			sb.append("; ");
+			sb.append("F-score: " + df2.format(fScore));
 			sb.append("\n");
+			
+			totalPrecision = totalPrecision + precision;
+			totalRecall = totalRecall + recall;
+			totalFScore = totalFScore + fScore;
 		}
+		
+		sb.append("\n");
+		sb.append("AvgPrecision: " + df2.format(totalPrecision * 1.0 / calculatedQueriesResults.size()));
+		sb.append("; ");
+		sb.append("AvgRecall: " + df2.format(totalRecall * 1.0 / calculatedQueriesResults.size()));
+		sb.append("; ");
+		sb.append("F-score: " + df2.format(totalFScore * 1.0 / calculatedQueriesResults.size()));
+		sb.append("\n");
 		
 	    byte[] strToBytes = sb.toString().getBytes();
 	    
@@ -81,6 +102,7 @@ public class ResultsWriter
 	    oFile.close();
 	}
 	
+	// Returns the calculated result for the specified query Id. 
 	private QueryResult getQueryResult(List<QueryResult> calculatedQueriesResults, int queryId) 
 	{
 		QueryResult queryResult = null;
@@ -96,7 +118,7 @@ public class ResultsWriter
 		return queryResult;
 	}
 
-	private int getIntersection(int[] a, int[] b)
+	private int getIntersectionSize(int[] a, int[] b)
 	{
 		Integer[] aa = Arrays.stream( a ).boxed().toArray( Integer[]::new );
 		Integer[] bb = Arrays.stream( b ).boxed().toArray( Integer[]::new );

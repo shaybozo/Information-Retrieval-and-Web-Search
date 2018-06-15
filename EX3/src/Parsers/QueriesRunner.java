@@ -3,6 +3,7 @@ package Parsers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -23,7 +24,7 @@ public class QueriesRunner {
 	    
 	    for(AnalyzerQuery query : queries)
 	    {
-    	   IndexReader reader = DirectoryReader.open(index);
+    	    IndexReader reader = DirectoryReader.open(index);
 		    IndexSearcher searcher = new IndexSearcher(reader);
 		    TopScoreDocCollector collector = TopScoreDocCollector.create(Constants.HITS_PER_PAGE);
 	    	searcher.search(query.Query, collector);
@@ -47,6 +48,7 @@ public class QueriesRunner {
 		
 	    for(int i = 0; i < hits.length; i++) 
 	    {
+	    	// return only docs, with score higher than a predefined threshold.
 	    	if (hits[i].score > Constants.SCORE_THRESHOLD)
 	    	{
 	    		result.add(hits[i].doc + 1);// Because the doc is added in zero based way

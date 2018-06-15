@@ -6,6 +6,7 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.DirectoryReader;
@@ -68,11 +69,11 @@ public class Analyzer {
 		String retrievalAlgorithm = m_ParametersReader.getRetrievalAlgorithm(parameters);
 		Boolean isImprovedAlgo = retrievalAlgorithm.toLowerCase() == "improved";  
 		
-		// Load the queries from queries file and prepare them for execution using lucene
-		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer);
-				
 		// Load all documents from the documents file into the IndexWriter and index them
-		LoadAllDocsAndIndexThem(indexWriter, docsFile, isImprovedAlgo, analyzer);
+		HashSet<String> stopWords = LoadAllDocsAndIndexThem(indexWriter, docsFile, analyzer, isImprovedAlgo);
+
+		// Load the queries from queries file and prepare them for execution using lucene
+		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer, isImprovedAlgo, stopWords);
 		
 		// Run queries using lucene
 		List<QueryResult> queriesResults = ExecuteQueries(index, queries);
@@ -85,20 +86,23 @@ public class Analyzer {
 	
 	// Private methods - start
 	
-	// Load the queries from queries file and prepare them for execution using lucene
-	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer) 
-				throws IOException, org.apache.lucene.queryparser.classic.ParseException 
+    // Returns an hashset of stop words (or null in case of improved algorithm)
+	private HashSet<String> LoadAllDocsAndIndexThem(IndexWriter indexWriter, String docsFile, StandardAnalyzer analyzer,
+										  Boolean isImprovedAlgo) throws IOException, ParseException
 	{
-		List<AnalyzerQuery> queries = m_QueriesReader.readQueries(queryFile, analyzer);
+		HashSet<String> stopWords = m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, analyzer, isImprovedAlgo);
+		indexWriter.close();
 		
-		return queries;
+		return stopWords;
 	}
 	
-	private void LoadAllDocsAndIndexThem(IndexWriter indexWriter, String docsFile, Boolean isImprovedAlgo, 
-							  			 StandardAnalyzer analyzer) throws IOException, ParseException
+	// Load the queries from queries file and prepare them for execution using lucene
+	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer, Boolean isImprovedAlgo, HashSet<String> stopWords) 
+				throws IOException, org.apache.lucene.queryparser.classic.ParseException 
 	{
-		m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, isImprovedAlgo, analyzer);
-		indexWriter.close();
+		List<AnalyzerQuery> queries = m_QueriesReader.readQueries(queryFile, analyzer, isImprovedAlgo, stopWords);
+		
+		return queries;
 	}
 
 	// Run the queries and building the results 
