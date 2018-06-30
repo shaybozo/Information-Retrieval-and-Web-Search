@@ -5,5 +5,7 @@ public class AnalyzerQuery {
 	
 	public int QueryId;
 	
+	public int ClassId;
+	
 	public Query Query;	
 }

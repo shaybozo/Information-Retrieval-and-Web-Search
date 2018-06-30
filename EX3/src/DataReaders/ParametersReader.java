@@ -1,68 +1,38 @@
 package DataReaders;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+
+import Dto.ProjectParametrs;
 
 public class ParametersReader {
 
 	// Retrieve the QueryFilePath from the parameters file
-	public String getQueryFilePath(List<String> parameters) 
-	{		
-		String path = null;
+	public ProjectParametrs readParametersFromFile(String parametersFilePathString) throws IOException 
+	{	
+		ProjectParametrs projectParametrs = new ProjectParametrs();		
+		Path parametersFilePath = Paths.get(parametersFilePathString);		
+		List<String> parameters = Files.readAllLines(parametersFilePath);
+		 
+		projectParametrs.trainFile = getParameter(parameters, "trainFile");
+		projectParametrs.testFile = getParameter(parameters, "testFile");
+		projectParametrs.outputFile = getParameter(parameters, "outputFile");
+		projectParametrs.K_parameterValue = Integer.parseInt(getParameter(parameters, "k"));
 		
-		for(String s : parameters)
-		{
-			if(s.contains("queryFile"))
-			{
-				path = s.substring(s.indexOf("=") + 1);
-				break;
-			}
-		}
-		
-		return path;
+		return projectParametrs;
 	}
 
 	// Retrieve the DocsFilePath from the parameters file
-	public String getDocsFilePath(List<String> parameters) {
+	public String getParameter(List<String> parameters, String parameterName) {
 		
 		String path = null;
 		
 		for(String s : parameters)
 		{
-			if(s.contains("docsFile"))
-			{
-				path = s.substring(s.indexOf("=") + 1);
-				break;
-			}
-		}
-		
-		return path;
-	}
-
-	// Retrieve the OutputFilePath from the parameters file
-	public String getOutputFilePath(List<String> parameters) {
-		
-		String path = null;
-		
-		for(String s : parameters)
-		{
-			if(s.contains("outputFile"))
-			{
-				path = s.substring(s.indexOf("=") + 1);
-				break;
-			}
-		}
-		
-		return path;
-	}
-
-	// Retrieve the algo type from the parameters file
-	public String getRetrievalAlgorithm(List<String> parameters) {
-		
-		String path = null;
-		
-		for(String s : parameters)
-		{
-			if(s.contains("retrievalAlgorithm"))
+			if(s.contains(parameterName))
 			{
 				path = s.substring(s.indexOf("=") + 1);
 				break;

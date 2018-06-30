@@ -19,10 +19,13 @@ import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.RAMDirectory;
 
+import DataReaders.ClassesTypesReader;
 import DataReaders.DocsReader;
 import DataReaders.ParametersReader;
-import DataReaders.QueriesReader;
 import Dto.AnalyzerQuery;
+import Dto.ClassType;
+import Dto.DocumentData;
+import Dto.ProjectParametrs;
 import Dto.QueryResult;
 import Parsers.QueriesRunner;
 
@@ -35,17 +38,17 @@ public class Analyzer {
 
 	private DocsReader m_DocsReader = null;
 	private ParametersReader m_ParametersReader = null;
-	private QueriesReader m_QueriesReader = null;
 	private QueriesRunner m_QueriesRunner = null;
 	private ResultsWriter m_ResultsWriter = null;
-		
+	private ClassesTypesReader m_ClassesTypesReader = null;
+	
 	public Analyzer()
 	{
 		m_DocsReader = new DocsReader();
 		m_ParametersReader = new ParametersReader();
-		m_QueriesReader = new QueriesReader();
 		m_QueriesRunner = new QueriesRunner();
 		m_ResultsWriter = new ResultsWriter();
+		m_ClassesTypesReader = new ClassesTypesReader();
 	}
 	
 	// Public methods - start
@@ -60,55 +63,52 @@ public class Analyzer {
 	    IndexWriter indexWriter = new IndexWriter(index, indexWritercConfig);
 	    
 	    // Retrieve the parameters from the parameters file 
-		Path parametersFilePath = Paths.get(parametersFileName);
-	    List<String> parameters = Files.readAllLines(parametersFilePath);
-	    
-		String queryFile = m_ParametersReader.getQueryFilePath(parameters);
-		String docsFile = m_ParametersReader.getDocsFilePath(parameters);
-		String outputFile = m_ParametersReader.getOutputFilePath(parameters);
-		String retrievalAlgorithm = m_ParametersReader.getRetrievalAlgorithm(parameters);
-		Boolean isImprovedAlgo = retrievalAlgorithm.toLowerCase() == "improved";  
+		ProjectParametrs projectParametrs = m_ParametersReader.readParametersFromFile(parametersFileName);
+		
+		// Retrieve the class types from file
+		List<ClassType> classesTypes = m_ClassesTypesReader.readClassesTypesFromFile("data/classes.txt");
 		
 		// Load all documents from the documents file into the IndexWriter and index them
-		HashSet<String> stopWords = LoadAllDocsAndIndexThem(indexWriter, docsFile, analyzer, isImprovedAlgo);
+		List<DocumentData> trainDocuments = LoadAllDocsAndIndexThem(indexWriter, projectParametrs, analyzer);
 
 		// Load the queries from queries file and prepare them for execution using lucene
-		List<AnalyzerQuery> queries = LoadQueries(queryFile, analyzer, isImprovedAlgo, stopWords);
+		List<AnalyzerQuery> testDocsAsQueries = BuildTestDocsAsQueries(projectParametrs.testFile, analyzer);
 		
 		// Run queries using lucene
-		List<QueryResult> queriesResults = ExecuteQueries(index, queries);
+		List<QueryResult> queriesResults = ExecuteQueries(index, trainDocuments, testDocsAsQueries, projectParametrs.K_parameterValue);
 		
 		// Write all queries results to the output file
-		WriteQueriesResultsToFile(queriesResults, outputFile);
+		WriteQueriesResultsToFile(queriesResults, projectParametrs.outputFile);
 	}
 
 	// Public methods - end
 	
 	// Private methods - start
 	
-    // Returns an hashset of stop words (or null in case of improved algorithm)
-	private HashSet<String> LoadAllDocsAndIndexThem(IndexWriter indexWriter, String docsFile, StandardAnalyzer analyzer,
-										  Boolean isImprovedAlgo) throws IOException, ParseException
+    // Returns the stop words (or null in case of improved algorithm)
+	private List<DocumentData> LoadAllDocsAndIndexThem(IndexWriter indexWriter, ProjectParametrs projectParametrs, 
+				StandardAnalyzer analyzer) throws IOException, ParseException
 	{
-		HashSet<String> stopWords = m_DocsReader.LoadAndIndexDocs(indexWriter, docsFile, analyzer, isImprovedAlgo);
+		List<DocumentData> documents = m_DocsReader.LoadAndIndexDocs(indexWriter, projectParametrs, analyzer);
 		indexWriter.close();
 		
-		return stopWords;
+		return documents;
 	}
 	
 	// Load the queries from queries file and prepare them for execution using lucene
-	private List<AnalyzerQuery> LoadQueries(String queryFile, StandardAnalyzer analyzer, Boolean isImprovedAlgo, HashSet<String> stopWords) 
-				throws IOException, org.apache.lucene.queryparser.classic.ParseException 
+	private List<AnalyzerQuery> BuildTestDocsAsQueries(String testFile, StandardAnalyzer analyzer) 
+				throws IOException, org.apache.lucene.queryparser.classic.ParseException, ParseException 
 	{
-		List<AnalyzerQuery> queries = m_QueriesReader.readQueries(queryFile, analyzer, isImprovedAlgo, stopWords);
+		List<AnalyzerQuery> queries = m_DocsReader.BuildTestDocsAsQueries(testFile, analyzer);
 		
 		return queries;
 	}
 
 	// Run the queries and building the results 
-	private List<QueryResult> ExecuteQueries(Directory index, List<AnalyzerQuery> queries) throws IOException
+	private List<QueryResult> ExecuteQueries(Directory index, List<DocumentData> trainDocuments,
+											 List<AnalyzerQuery> queries, int k) throws IOException
 	{ 
-		List<QueryResult> result = m_QueriesRunner.ExecuteQueries(index, queries);
+		List<QueryResult> result = m_QueriesRunner.ExecuteQueries(index, trainDocuments, queries, k);
 	    
 	    return result;
 	}
@@ -117,7 +117,6 @@ public class Analyzer {
 	private void WriteQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException 
 	{
 		m_ResultsWriter.writeQueriesResultsToFile(queriesResults, outputFile);
-		m_ResultsWriter.CalculatePrecisionAndRecall(queriesResults);
 	}
 	
 	// Private methods - end

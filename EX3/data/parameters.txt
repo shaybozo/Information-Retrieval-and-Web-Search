@@ -1,4 +1,4 @@
-queryFile=data/queries.txt
-docsFile=data/docs.txt
-outputFile=out/output.txt
-retrievalAlgorithm=basic
+trainFile=data/train.csv
+testFile=data/test.csv
+outputFile=out/out1.csv
+k=20
