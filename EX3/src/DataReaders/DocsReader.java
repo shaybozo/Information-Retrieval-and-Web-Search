@@ -70,6 +70,12 @@ public class DocsReader {
 			String text = parts[2] + " " + parts[3];
 			
 			analyzerQuery.Query = buildLuceneQuery(text, analyzer);
+			
+			if (analyzerQuery.Query != null) {
+				analyzerQueries.add(analyzerQuery);	
+			} else {
+				System.out.println("Query failure " + analyzerQuery.QueryId);
+			}
 		}
 	    
 	    return analyzerQueries;
@@ -82,7 +88,16 @@ public class DocsReader {
 		
 		String queryTokens = AnalyzerStringUtils.Concat(queryTokensList, " ");
 		
-		Query query = new QueryParser(Constants.FIELD_NAME_CONTENT, analyzer).parse(queryTokens);
+		Query query = null;
+		
+		try {
+			QueryParser queryParser = new QueryParser(Constants.FIELD_NAME_CONTENT, analyzer);
+			
+			query = queryParser.parse(queryTokens);
+		}
+		catch(Exception e) {
+			
+		}
 		
 		return query;
 	}

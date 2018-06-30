@@ -34,7 +34,7 @@ public class QueriesRunner {
 		    queryResult.QueryId = query.QueryId;
 		    queryResult.HittedDocs = getHittedDocsIds(hits);
 		    queryResult.ActualClassType = query.ClassId;
-		    queryResult.CalculatedClassType = calculateClassTypeFromHittedDocs(queryResult.HittedDocs);
+		    queryResult.CalculatedClassType = calculateClassTypeFromHittedDocs(queryResult.HittedDocs, trainDocuments);
 		    queryResult.IsGoodClassTypePrediction = queryResult.ActualClassType == queryResult.CalculatedClassType;
 		    
 		    result.add(queryResult);
@@ -45,7 +45,42 @@ public class QueriesRunner {
 	    return result;
 	}
 	
-	public int calculateClassTypeFromHittedDocs(int[] a)
+	private int calculateClassTypeFromHittedDocs(int[] hittedDocs, List<DocumentData> trainDocuments) 
+	{
+		int[] hittedDocsClassTypes = convertHittedDocsToClassTypes(hittedDocs, trainDocuments);
+		
+		int result = getMostCommonClassType(hittedDocsClassTypes);
+		
+		return result;
+	}
+	
+	private int[] convertHittedDocsToClassTypes(int[] hittedDocs, List<DocumentData> trainDocuments)
+	{
+		int[] result = new int[hittedDocs.length];
+		
+		for (int i = 0; i < hittedDocs.length; i++) 
+		{
+			result[i] = getHittedDocClassType(hittedDocs[i], trainDocuments);
+		}
+		
+		return result;
+	}
+	
+	private int getHittedDocClassType(int hittedDoc, List<DocumentData> trainDocuments) 
+	{
+		int result = -1;
+		
+		for (DocumentData documentData : trainDocuments) {
+			if (hittedDoc == documentData.documentID) {
+				result = documentData.classID;
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
+	private int getMostCommonClassType(int[] a)
 	{
 	  int count = 1, tempCount;
 	  int popular = a[0];

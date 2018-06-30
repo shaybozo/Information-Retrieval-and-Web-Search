@@ -50,23 +50,26 @@ public class ResultsWriter
 			sb.append("\n");
 			
 			sb.append("-----------------------------------------");
+			sb.append("\n");
 			
 			if (queryResult.IsGoodClassTypePrediction) {
 				successfulPredictionDocs++;
 			}
 		}
+		
 		double successfulPredictionRate = successfulPredictionDocs / queriesResults.size();
 		
 		sb.append("Total prediction results:");
-		sb.append("From ");
+		sb.append(" from ");
 		sb.append(queriesResults.size());
-		sb.append(" test docs we predected successfuly ");
+		sb.append(" test docs we predicted successfully ");
 		sb.append(successfulPredictionDocs);
 		sb.append("\n");
 		sb.append("The successful prediction rate is: ");
-		df2.format(successfulPredictionRate);
+		sb.append(df2.format(successfulPredictionRate));
+		sb.append("\n");
 		sb.append("-----------------------------------------");
-		
+		sb.append("\n");
 		String result = sb.toString();
 		
 		return result;
