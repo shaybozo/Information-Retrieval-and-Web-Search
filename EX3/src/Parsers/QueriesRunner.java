@@ -3,6 +3,7 @@ package Parsers;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.IndexReader;
@@ -21,9 +22,11 @@ public class QueriesRunner {
 											List<AnalyzerQuery> queries, int k) throws IOException
 	{ 
 		List<QueryResult> result = new ArrayList<QueryResult>();
-	    
+		HashMap<Integer, Integer> map = buildMap(trainDocuments);
+
 	    for(AnalyzerQuery query : queries)
 	    {
+	    	System.out.println("running query " + query.QueryId);
     	    IndexReader reader = DirectoryReader.open(index);
 		    IndexSearcher searcher = new IndexSearcher(reader);
 		    TopScoreDocCollector collector = TopScoreDocCollector.create(k);
@@ -34,7 +37,7 @@ public class QueriesRunner {
 		    queryResult.QueryId = query.QueryId;
 		    queryResult.HittedDocs = getHittedDocsIds(hits);
 		    queryResult.ActualClassType = query.ClassId;
-		    queryResult.CalculatedClassType = calculateClassTypeFromHittedDocs(queryResult.HittedDocs, trainDocuments);
+		    queryResult.CalculatedClassType = calculateClassTypeFromHittedDocs(queryResult.HittedDocs, map);
 		    queryResult.IsGoodClassTypePrediction = queryResult.ActualClassType == queryResult.CalculatedClassType;
 		    
 		    result.add(queryResult);
@@ -45,39 +48,37 @@ public class QueriesRunner {
 	    return result;
 	}
 	
-	private int calculateClassTypeFromHittedDocs(int[] hittedDocs, List<DocumentData> trainDocuments) 
+	private int calculateClassTypeFromHittedDocs(int[] hittedDocs, HashMap<Integer, Integer> map) 
 	{
-		int[] hittedDocsClassTypes = convertHittedDocsToClassTypes(hittedDocs, trainDocuments);
+		int[] hittedDocsClassTypes = convertHittedDocsToClassTypes(hittedDocs, map);
 		
 		int result = getMostCommonClassType(hittedDocsClassTypes);
 		
 		return result;
 	}
 	
-	private int[] convertHittedDocsToClassTypes(int[] hittedDocs, List<DocumentData> trainDocuments)
+	private int[] convertHittedDocsToClassTypes(int[] hittedDocs, 
+					HashMap<Integer, Integer> trainDocumentsMap)
 	{
 		int[] result = new int[hittedDocs.length];
 		
 		for (int i = 0; i < hittedDocs.length; i++) 
 		{
-			result[i] = getHittedDocClassType(hittedDocs[i], trainDocuments);
+			result[i] = trainDocumentsMap.get(hittedDocs[i]);
 		}
 		
 		return result;
 	}
 	
-	private int getHittedDocClassType(int hittedDoc, List<DocumentData> trainDocuments) 
+	private HashMap<Integer, Integer> buildMap(List<DocumentData> trainDocuments) 
 	{
-		int result = -1;
+		HashMap<Integer, Integer> map = new HashMap<Integer, Integer>();
 		
 		for (DocumentData documentData : trainDocuments) {
-			if (hittedDoc == documentData.documentID) {
-				result = documentData.classID;
-				break;
-			}
+			map.put(documentData.documentID, documentData.classID);
 		}
 		
-		return result;
+		return map;
 	}
 	
 	private int getMostCommonClassType(int[] a)
