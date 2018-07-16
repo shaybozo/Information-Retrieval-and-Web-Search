@@ -93,6 +93,12 @@ public class ResultsWriter
 		sb.append("The successful prediction rate is: ");
 		sb.append(df2.format(_successfulPredictionRate));
 		sb.append("\n");
+		sb.append("The MacroAverage is: ");
+		sb.append(df2.format(computeMacroAveraging()));
+		sb.append("\n");
+		sb.append("The MicroAverage is: ");
+		sb.append(df2.format(computeMicroAveraging()));
+		sb.append("\n");
 		sb.append("-----------------------------------------");
 		sb.append("\n");
 		String result = sb.toString();
