@@ -22,7 +22,7 @@ import Dto.DocumentData;
 
 public class DocsReader {
 	
-	// Load all documents from the documents file into the IndexWriter and index them
+	// Load all documents from the train documents file into the IndexWriter and index them
 	public List<DocumentData> LoadAndIndexDocs(IndexWriter indexWriter, ProjectParametrs projectParametrs, 
 								 StandardAnalyzer analyzer) throws IOException, ParseException 
 	{
@@ -51,7 +51,7 @@ public class DocsReader {
 	    return result;
 	}
 	
-	// Load all documents from the documents file into the IndexWriter and index them
+	// Load all documents from the test documents file and create a list of query based on them
 	public List<AnalyzerQuery> BuildTestDocsAsQueries(String testFile, StandardAnalyzer analyzer) 
 				throws IOException, ParseException, org.apache.lucene.queryparser.classic.ParseException 
 	{

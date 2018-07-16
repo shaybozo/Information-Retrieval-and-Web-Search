@@ -1,7 +1,13 @@
 package Main;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.Writer;
+import java.text.DateFormat;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.index.IndexWriter;
@@ -12,6 +18,7 @@ import DataReaders.ClassesTypesReader;
 import DataReaders.DocsReader;
 import DataReaders.ParametersReader;
 import Dto.AnalyzerQuery;
+import Dto.ClassPerformance;
 import Dto.ClassType;
 import Dto.DocumentData;
 import Dto.ProjectParametrs;
@@ -62,12 +69,15 @@ public class Analyzer {
 
 		// Load the queries from queries file and prepare them for execution using lucene
 		List<AnalyzerQuery> testDocsAsQueries = BuildTestDocsAsQueries(projectParametrs.testFile, analyzer);
-		
+
 		// Run queries using lucene
 		List<QueryResult> queriesResults = ExecuteQueries(index, trainDocuments, testDocsAsQueries, projectParametrs.K_parameterValue);
 		
 		// Write all queries results to the output file
-		WriteQueriesResultsToFile(queriesResults, projectParametrs.outputFile);
+		WriteQueriesResultsToFile(queriesResults, classesTypes, projectParametrs.outputFile, projectParametrs.K_parameterValue);
+
+		// following fuction is meant for testing various K values.
+		// testVariousK(index, trainDocuments, testDocsAsQueries, classesTypes, projectParametrs.outputFile);
 	}
 
 	// Public methods - end
@@ -103,10 +113,22 @@ public class Analyzer {
 	}
 	
 	// Write all queries results to the output file
-	private void WriteQueriesResultsToFile(List<QueryResult> queriesResults, String outputFile) throws IOException 
+	private void WriteQueriesResultsToFile(List<QueryResult> queriesResults, List<ClassType> classesTypes, String outputFileName, int kValue) throws IOException 
 	{
-		m_ResultsWriter.writeQueriesResultsToFile(queriesResults, outputFile);
+		m_ResultsWriter.writeQueriesResultsToFile(queriesResults, classesTypes, outputFileName, kValue);
 	}
 	
+	private void testVariousK(Directory index, List<DocumentData> trainDocuments, List<AnalyzerQuery> testDocsAsQueries, List<ClassType> classesTypes, String outputFile) throws IOException 
+	{
+		int[] kValues = {10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180, 190, 200};
+		
+		for (int kValue : kValues) {
+			// Run queries using lucene
+			List<QueryResult> queriesResults = ExecuteQueries(index, trainDocuments, testDocsAsQueries, kValue);
+			
+			// Write all queries results to the output file
+			WriteQueriesResultsToFile(queriesResults, classesTypes, outputFile + "_" + "k" + kValue, kValue);
+		}
+	}
 	// Private methods - end
 }

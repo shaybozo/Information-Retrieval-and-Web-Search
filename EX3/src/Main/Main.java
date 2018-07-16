@@ -8,7 +8,7 @@ public class Main {
   {
 	  Analyzer analyzer = new Analyzer();
 		  
-	  String parametersFileName = "data/parameters.txt";//args[0];
+	  String parametersFileName = args[0];
 		  
 	  analyzer.run(parametersFileName);
 		  
