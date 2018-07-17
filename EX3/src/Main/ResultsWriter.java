@@ -62,19 +62,11 @@ public class ResultsWriter
 		for(QueryResult queryResult : queriesResults)
 		{
 			updateClassPerformance(queryResult);
-			sb.append("Test doc ");
 			sb.append(queryResult.QueryId);
-			sb.append(": \n");
-
-			sb.append("Actual class type: ");
-			sb.append(queryResult.ActualClassType);
-			sb.append("\n");
-			
-			sb.append("Calculated Class Type:");
+			sb.append(",");
 			sb.append(queryResult.CalculatedClassType);
-			sb.append("\n");
-			
-			sb.append("-----------------------------------------");
+			sb.append(",");
+			sb.append(queryResult.ActualClassType);
 			sb.append("\n");
 			
 			if (queryResult.IsGoodClassTypePrediction) {
@@ -84,6 +76,9 @@ public class ResultsWriter
 		
 		_successfulPredictionRate = successfulPredictionDocs * 1.0 / queriesResults.size();
 		
+		sb.append("\n");
+		sb.append("-----------------------------------------");
+		sb.append("\n");
 		sb.append("Total prediction results:");
 		sb.append(" from ");
 		sb.append(queriesResults.size());
@@ -91,16 +86,14 @@ public class ResultsWriter
 		sb.append(successfulPredictionDocs);
 		sb.append("\n");
 		sb.append("The successful prediction rate is: ");
-		sb.append(df2.format(_successfulPredictionRate));
+		sb.append(_successfulPredictionRate);
 		sb.append("\n");
 		sb.append("The MacroAverage is: ");
-		sb.append(df2.format(computeMacroAveraging()));
+		sb.append(computeMacroAveraging());
 		sb.append("\n");
 		sb.append("The MicroAverage is: ");
-		sb.append(df2.format(computeMicroAveraging()));
-		sb.append("\n");
-		sb.append("-----------------------------------------");
-		sb.append("\n");
+		sb.append(computeMicroAveraging());
+
 		String result = sb.toString();
 		
 		return result;
